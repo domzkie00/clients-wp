@@ -1,0 +1,23 @@
+.is-new-member-field {
+    display: none;
+}
+
+#client_wp_pages_options label {
+    display: block;
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+.cwp-dropdown {
+    display: block;
+    width: 100%;
+}
+
+.cwp-shortcode {
+    background: #fff !important;
+    color: #000 !important;
+}
+
+#integration-select-folder {
+	display: none;
+}
