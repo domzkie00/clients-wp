@@ -72,16 +72,84 @@ class Clients_WP_Members {
                 
             } else {
 
-                $user_data = array(
-                    'user_email' => $_POST['_user_email'],
-                    'user_login' => $_POST['_user_email'],
-                    'user_pass' => $_POST['_user_first_name'].'1234!',
-                    'first_name' => $_POST['_user_first_name'],
-                    'last_name' => $_POST['_user_last_name'],
-                );
+                if(isset($_POST['user_registration']) || isset($_POST['add_user_to_group'])) {
+                    $error = false;
+                    $err_msg = null;
 
-                $user_id = wp_insert_user( $user_data ) ;
-                update_user_meta( $user_id, '_clients_wp_user_groups', array($_GET['groupid']));
+                    $user = get_user_by('email', $_POST['user_email']);
+
+                    if($user) {
+                        $error = true;
+                        $user_groups = get_user_meta( $user->ID, '_clients_wp_user_groups', true );
+                        if (is_array($user_groups)) {
+                            if (in_array($_POST['client_group'], $user_groups)) {
+                                $err_msg = 'Email already registered to selected client group';
+                            }
+                        }
+
+                        if($err_msg == null) {
+                            $err_msg = 'Email already registered to a client group';
+                        }
+                    }
+
+                    if(isset($_POST['user_registration'])) {
+                        if(($err_msg == null) && ($_POST['user_password'] != $_POST['user_confirmpassword'])) {
+                            $error = true;
+                            $err_msg = 'Password confirmation mismatch!';
+                        }
+                    }
+
+                    if($error) {
+                        $_SESSION['error'] = $err_msg;
+                        $_SESSION['email'] = $_POST['user_email'];
+                        $_SESSION['fname'] = $_POST['user_fname'];
+                        $_SESSION['lname'] = $_POST['user_lname'];
+                        $_SESSION['gid'] = $_POST['client_group'];
+                        header("Location: " . $_SERVER["HTTP_REFERER"]);
+                    }
+
+                    if(!$error) {
+                        if(isset($_POST['user_registration'])) {
+                            $user_data = array(
+                                'user_email' => $_POST['user_email'],
+                                'user_login' => $_POST['user_email'],
+                                'user_pass' => $_POST['user_password'],
+                                'first_name' => $_POST['user_fname'],
+                                'last_name' => $_POST['user_lname'],
+                            );
+                        }
+                        if(isset($_POST['add_user_to_group'])) {
+                            $user_data = array(
+                                'user_email' => $_POST['user_email'],
+                                'user_login' => $_POST['user_email'],
+                                'user_pass' => $_POST['user_fname'].'1234',
+                                'first_name' => $_POST['user_fname'],
+                                'last_name' => $_POST['user_lname'],
+                            );
+                        }
+
+                        $user_id = wp_insert_user( $user_data ) ;
+                        update_user_meta( $user_id, '_clients_wp_user_groups', $_POST['client_group']);
+
+                        if(isset($_POST['user_registration'])) {
+                            $_SESSION['success'] = 'You successfully registered to a client group.';
+                        }
+                        if(isset($_POST['add_user_to_group'])) {
+                            $_SESSION['success'] = 'You successfully added user to your client group.';
+                        }
+                    }
+                } else {
+                    $user_data = array(
+                        'user_email' => $_POST['_user_email'],
+                        'user_login' => $_POST['_user_email'],
+                        'user_pass' => $_POST['_user_first_name'].'1234!',
+                        'first_name' => $_POST['_user_first_name'],
+                        'last_name' => $_POST['_user_last_name'],
+                    );
+
+                    $user_id = wp_insert_user( $user_data ) ;
+                    update_user_meta( $user_id, '_clients_wp_user_groups', array($_GET['groupid']));
+                }
             }
 
             // wp_redirect(admin_url('admin.php?page=clients-wp-settings&view=members&groupid=') . $_GET['groupid']);

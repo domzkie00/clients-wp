@@ -44,5 +44,8 @@ class Clients_WP{
         //wp_enqueue_style('clients-wp-datatable-bootstrap-style', 'https://cdn.datatables.net/1.10.16/css/dataTables.bootstrap.min.css', array(), '1.10.16');
         //wp_enqueue_script('clients-wp-datatable-jquery', 'https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js', array( 'jquery' ), '1.10.16', true);
         //wp_enqueue_script('clients-wp-datatable-bootstrap-script', 'https://cdn.datatables.net/1.10.16/js/dataTables.bootstrap.min.js', array( 'jquery' ), '1.10.16', true);
+
+        wp_register_style('cwp-style', CWP_URL . '/assets/css/cwp-admin-style.css', '1.0', true );
+        wp_enqueue_style('cwp-style');
     }
 }

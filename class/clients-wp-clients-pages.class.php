@@ -1,10 +1,13 @@
 <?php if ( ! defined( 'ABSPATH' ) ) exit;
+session_start();
 
 class Clients_WP_Client_Page {
 
     public function __construct() {
         add_action('wp_ajax_get_clients_not_in_shortcode', array($this, 'get_clients_not_in_shortcode_ajax'));
         add_action('init', array($this, 'cwp_register_shortcodes'));
+        add_shortcode('clientswp_user_register_form', array($this, 'user_register'));
+        add_shortcode('clientswp_group_add_user_form', array($this, 'add_user_to_group'));
     }
 
     public function get_clients_not_in_shortcode($shortcode, $current_clients = array()) {
@@ -110,6 +113,46 @@ class Clients_WP_Client_Page {
 
             });
         }
+    }
+
+    public function user_register()
+    {
+        global $post;
+
+        $clients_query = new WP_Query( array(
+                'post_type' => 'bt_client',
+                'post_status' => 'publish',
+                'orderby' => 'title',
+                'order' => 'ASC'
+            )
+        );
+
+        include_once(CWP_PATH_INCLUDES . '/clients-wp-enroll-client.php');
+        session_destroy();
+    }
+
+    public function add_user_to_group()
+    {
+        if ( !is_user_logged_in() ) {
+            echo 'You must be logged in to access content.';
+        } else {
+            global $current_user;
+            $current_user = wp_get_current_user();
+            $client_group_id = get_user_meta( $current_user->ID, '_clients_wp_user_groups', true );
+
+            if(!$client_group_id) {
+                echo 'You must be a client group admin to view content.';
+            } else {
+                $client_group = new WP_Query('post_type=bt_client&p='.$client_group_id[0]);
+
+                if (cwp_get_group_owner($client_group_id[0])->ID == $current_user->ID) {
+                    include_once(CWP_PATH_INCLUDES . '/clients-wp-add-usertogroup.php');
+                } else {
+                    echo 'You must be a client group admin to view content.';
+                }       
+            }
+        }
+        session_destroy();
     }
 
     // end
