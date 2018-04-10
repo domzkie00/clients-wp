@@ -1,5 +1,5 @@
-<h1>Add User to Client Group</h1>
-<div class="row">
+<h2>Add User to Client Group</h2>
+<div class="row front-forms">
 	<div class="col-md-12">
 		<form action="" method="POST">
 			<input type="hidden" name="add_user_to_group" value="true">

@@ -1,5 +1,5 @@
-<h1>Register to Client Group</h1>
-<div class="row">
+<h2>Register to Client Group</h2>
+<div class="row front-forms">
 	<div class="col-md-12">
 		<form action="" method="POST">
 			<input type="hidden" name="user_registration" value="true">

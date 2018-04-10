@@ -218,6 +218,11 @@ p.description span {
     font-weight: 600;
 }
 
+.front-forms .form-ctrl {
+    font-size: 1em;
+    line-height: inherit;
+}
+
 .alrt-msg {
     border: 1px solid transparent;
     border-radius: 4px;
