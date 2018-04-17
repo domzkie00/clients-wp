@@ -87,6 +87,10 @@ class Clients_WP_Client_Page {
 
                 $user_groups = cwp_get_current_user_groups();
                 if (empty($user_groups))
+                    global $post;
+                    if (strpos($post->post_content, '[clientswp_user_register_form]') !== false) {
+                        return '';
+                    }
                     return $for_member_content;
 
 
