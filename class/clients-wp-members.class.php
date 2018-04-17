@@ -104,7 +104,6 @@ class Clients_WP_Members {
                         $_SESSION['email'] = $_POST['user_email'];
                         $_SESSION['fname'] = $_POST['user_fname'];
                         $_SESSION['lname'] = $_POST['user_lname'];
-                        $_SESSION['gid'] = $_POST['client_group'];
                         header("Location: " . $_SERVER["HTTP_REFERER"]);
                     }
 

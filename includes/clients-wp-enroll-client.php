@@ -1,10 +1,11 @@
-<h2>Register to Client Group</h2>
+<h2>Register to Client Group: <b><?= $group->post_title ?></b></h2>
 <div class="row front-forms">
 	<div class="col-md-12">
 		<form action="" method="POST">
 			<input type="hidden" name="user_registration" value="true">
 			<input type="hidden" name="clients_wp_add_member" value="true">
 			<input type="hidden" name="_is_new_member" value="true">
+			<input type="hidden" name="client_group" value="<?= $group->ID ?>">
 
 			<?php if(isset($_SESSION['error']) || isset($_SESSION['success'])) { ?>
 			<div class="form-grp">
@@ -40,16 +41,6 @@
 
 			<div class="form-grp">
 				<input type="password" name="user_confirmpassword" id="user_confirmpassword" class="form-ctrl" autocomplete="off" placeholder="Confirm Password" required>
-			</div>
-
-			<div class="form-grp">
-				<select name="client_group" id="client_group" class="form-ctrl" style="border: 1px solid #bbb; border-radius: 3px;" required>
-					<option value="" disabled selected>Select Group</option>
-					<?php foreach($clients_query->posts as $group) { ?>
-						<option value="<?= $group->ID ?>" <?= (isset($_SESSION['gid']) && ($group->ID == $_SESSION['gid'])) ? 'selected' : '' ?>><?= $group->post_title ?></option>
-					<?php } ?>
-				</select>
-				<p style="font-size: 14px; font-style: italic; padding-left: 4px;">Select group where to register.</p>
 			</div>
 
 			<button type="submit" class="btn btn-primary" style="float: right;">Register</button>

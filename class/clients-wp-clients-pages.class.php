@@ -74,11 +74,16 @@ class Clients_WP_Client_Page {
             // register shortcode starts here
             add_shortcode(substr($shortcode, 1, -1), function() use ($shortcode) {
                 $clients_wp_settings = get_option('clients_wp_settings');
-                $user_not_logged_in = isset($clients_wp_settings['user_not_logged_in']) ? $clients_wp_settings['user_not_logged_in'] : 'You should be logged in to see this contents.';
-                $for_member_content = isset($clients_wp_settings['for_member_content']) ? $clients_wp_settings['for_member_content'] : 'You are not allowed to see this contents.';
+                $user_not_logged_in = isset($clients_wp_settings['user_not_logged_in']) ? $clients_wp_settings['user_not_logged_in'] : 'You should be logged in to see contents.';
+                $for_member_content = isset($clients_wp_settings['for_member_content']) ? $clients_wp_settings['for_member_content'] : 'You are not allowed to see contents.';
 
-                if (!is_user_logged_in())
+                if (!is_user_logged_in()) {
+                    global $post;
+                    if (strpos($post->post_content, '[clientswp_user_register_form]') !== false) {
+                        return '';
+                    }
                     return $user_not_logged_in;
+                }
 
                 $user_groups = cwp_get_current_user_groups();
                 if (empty($user_groups))
@@ -119,22 +124,38 @@ class Clients_WP_Client_Page {
     {
         global $post;
 
-        $clients_query = new WP_Query( array(
-                'post_type' => 'bt_client',
-                'post_status' => 'publish',
-                'orderby' => 'title',
-                'order' => 'ASC'
-            )
-        );
+        $clients_wp_shortcodes = get_option('clients_wp_shortcodes');
+        $cwp_shortcodes = isset($clients_wp_shortcodes) ? $clients_wp_shortcodes : '';
 
-        include_once(CWP_PATH_INCLUDES . '/clients-wp-enroll-client.php');
-        session_destroy();
+        foreach ($cwp_shortcodes['shortcode'] as $key => $shortcode) {
+            if (strpos($post->post_content, $shortcode) !== false) {
+                $client_page = new WP_Query( array(
+                        'post_type' => 'bt_client_page',
+                        'post_status' => 'publish',
+                        'meta_query' => array(
+                           array(
+                               'key' => '_clients_page_shortcode',
+                               'value' => $shortcode,
+                               'compare' => '=',
+                           )
+                       )
+                    )
+                );
+
+                if($client_page->post->ID) {
+                    $post_metas = get_post_meta($client_page->post->ID);
+                    $group = get_post($post_metas['_clients_page_client'][0]);
+                    include_once(CWP_PATH_INCLUDES . '/clients-wp-enroll-client.php');
+                    session_destroy();
+                }
+            }
+        }
     }
 
     public function add_user_to_group()
     {
         if ( !is_user_logged_in() ) {
-            echo 'You must be logged in to access content.';
+            echo 'You must be logged in to access content. ';
         } else {
             global $current_user;
             $current_user = wp_get_current_user();
@@ -147,12 +168,12 @@ class Clients_WP_Client_Page {
 
                 if (cwp_get_group_owner($client_group_id[0])->ID == $current_user->ID) {
                     include_once(CWP_PATH_INCLUDES . '/clients-wp-add-usertogroup.php');
+                    session_destroy();
                 } else {
                     echo 'You must be a client group admin to view content.';
                 }       
             }
         }
-        session_destroy();
     }
 
     // end
