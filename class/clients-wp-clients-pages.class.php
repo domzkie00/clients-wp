@@ -82,6 +82,9 @@ class Clients_WP_Client_Page {
                     if (strpos($post->post_content, '[clientswp_user_register_form]') !== false) {
                         return '';
                     }
+                    if (strpos($post->post_content, '[clientswp_group_add_user_form]') !== false) {
+                        return '';
+                    }
                     return $user_not_logged_in;
                 }
 
@@ -89,6 +92,9 @@ class Clients_WP_Client_Page {
                 if (empty($user_groups)) {
                     global $post;
                     if (strpos($post->post_content, '[clientswp_user_register_form]') !== false) {
+                        return '';
+                    }
+                    if (strpos($post->post_content, '[clientswp_group_add_user_form]') !== false) {
                         return '';
                     }
                     return $for_member_content;
@@ -114,6 +120,13 @@ class Clients_WP_Client_Page {
                 );
 
                 if (count($client_page_query->posts) < 1) {
+                    global $post;
+                    if (strpos($post->post_content, '[clientswp_user_register_form]') !== false) {
+                        return '';
+                    }
+                    if (strpos($post->post_content, '[clientswp_group_add_user_form]') !== false) {
+                        return '';
+                    }
                     return $for_member_content;
                 }
                 else {
